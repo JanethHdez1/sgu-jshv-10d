@@ -1,8 +1,9 @@
 package sgu.server.modules.users;
 
+import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/users")
