@@ -1,10 +1,10 @@
-#Servir la imagen del backend con maven
-FROM maven:3.9.9-eclipse-temurin-21 AS build
+# Servir la imagen del backend con maven
+FROM maven:3.9.9-eclipse-temurin-21
 
-# Establecer un directorio de trabajo
+# Establecer un directorio de trabajo
 WORKDIR /app
 
-# Copia todos los archivos del proyecto en el drectorio de trabajo
+# Copia todos los archivos del proyecto en el directorio de trabajo
 COPY . .
 
 # Ejecutar 2 comandos:

@@ -4,7 +4,7 @@ services:
     container_name: sgu-database
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: sgu-jshv
+      MYSQL_DATABASE: usuarios
     ports:
       - "3307:3306"
     networks:
@@ -13,50 +13,54 @@ services:
       - sgu-volume:/var/lib/mysql
 
   frontend:
-    image: client:latest
+    image: client:1.0-sgu
     build:
       context: ./client
       args:
         API_HOST: localhost
-        API_BASE: /sgu-api
+        API_BASE: /usuarios
         API_PORT: 8081
+        API_PROTOCOL: https
     container_name: sgu-frontend
     ports:
-      - "3000:80"
+      - "3000:443"
+    volumes:
+      - certbot-conf:/etc/letsencrypt
     networks:
       - sgu-net
     depends_on:
       - database
 
   backend:
-    image: server:latest
+    image: server:1.0-sgu
     build:
-        context: ./server
+      context: ./server
     environment:
-        # SCREAMING_SNAKE_CASE
-        SERVER_PORT: 8080
-        DB_HOST: database
-        DB_PORT: 3306
-        DB_NAME: sgu-jshv
-        DB_USER: root
-        DB_PASS: root
+      SERVER_PORT: 8080
+      DB_HOST: database
+      DB_PORT: 3306
+      DB_NAME: usuarios
+      DB_USER: root
+      DB_PASS: root
+      SERVER_SSL_ENABLED: true
+      SERVER_SSL_KEYSTORE: /etc/letsencrypt/live/localhost/keystore.p12
+      SERVER_SSL_KEYSTORE_PASS: changeit
     container_name: sgu-backend
     ports:
       - "8081:8080"
     networks:
       - sgu-net
+    volumes:
+      - certbot-conf:/etc/letsencrypt
     depends_on:
       - frontend
 
-# docker volume create sgu-volume
 volumes:
   sgu-volume:
     external: true
+  certbot-conf:
+    external: true
 
-# docker network create --driver bridge sgu-net
 networks:
   sgu-net:
     external: true
-
-# docker compose build --no-cache
-# docker compose up -d
